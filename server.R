@@ -15,7 +15,6 @@ shinyServer(function(input, output) {
   output$map <- renderLeaflet({
     leaflet(kid) %>%
       addProviderTiles("CartoDB.Positron") %>%
-      #addGeoJSON(boundaries,weight = 1, color = '#0F2E17', fill = TRUE) %>%
       setView(-73.951801,40.702988, zoom = 11) %>%
       addCircleMarkers(~lon, ~lat, radius=~Seats/3, clusterOptions = markerClusterOptions(),
                         fillColor=~pal(Type),fillOpacity=0.7, stroke=FALSE,
@@ -52,7 +51,7 @@ shinyServer(function(input, output) {
                                              titleTextStyle: {color:'blue'}}]"
                                               , vAxes="[{title:'Number of Eligible Kids', 
                                               titleTextStyle: {color: 'blue'}}]",
-                                              width=800,height=500))
+                                              width=800,height=500,gvis.editor="Customize this graph!"))
   })
   
   
