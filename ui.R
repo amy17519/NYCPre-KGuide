@@ -6,7 +6,7 @@ library(DT)
 
 shinyUI(fluidPage(theme = "bootstrap.css",
             navbarPage("Pre-K Search in NYC", id='nav',
-                       tabPanel("Pre-K Map",fluidPage(
+                       tabPanel("Pre-K Map",fluidPage(div(class="outer", 
                          leafletOutput("map",width = "100%",height=650),
                          absolutePanel(h4("Pre-K Finder"),id = "controls", class = "panel", fixed = TRUE,
                                        draggable = TRUE, top =80, left = 130, right = "auto", bottom = "auto",
@@ -30,7 +30,7 @@ shinyUI(fluidPage(theme = "bootstrap.css",
                                                                      "Both Full and Half Day", "Both Half Day and 5-Hour")),
                                        actionButton("go", "Click to find"),
                                        helpText("Click on Pre-K Catalog on top for more detailed info")
-                                       ))),
+                                       )))),
                        tabPanel("Pre-K Catalog",fluidPage(
                          fluidRow(
                            column(12,dataTableOutput('table')
@@ -75,7 +75,7 @@ shinyUI(fluidPage(theme = "bootstrap.css",
                        tabPanel("About This Site",h3("Motivation"),p("This website is created for two purposes. 
                                                                      First, Pre-K map and catalog provide a comprehensive 
                                                                      guide for parents who do not understand Universal Pre-K Program 
-                                                                     or simply want to quickly find the closest and most suitablepre-K 
+                                                                     or simply want to quickly find the closest and most suitable pre-K 
                                                                      for their children. This Pre-K guide gives information
                                                                      about each pre-k’s location, contacts, meal plans, playspace, 
                                                                      extended day care options, and enrollment restrictions. Also, 
