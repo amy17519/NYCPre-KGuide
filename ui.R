@@ -2,7 +2,6 @@ library(shiny)
 library(leaflet)
 library(dplyr)
 library(googleVis)
-library(DT)
 
 shinyUI(fluidPage(theme = "bootstrap.css",
             navbarPage("Pre-K Search in NYC", id='nav',
