@@ -2,7 +2,6 @@ library(shiny)
 library(leaflet)
 library(dplyr)
 library(googleVis)
-library(DT)
 
 kid <- read.csv("https://raw.githubusercontent.com/amy17519/NYCPre-KGuide/master/kid.csv",
                 stringsAsFactors=FALSE)
