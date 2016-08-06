@@ -2,7 +2,6 @@ library(shiny)
 library(leaflet)
 library(dplyr)
 library(googleVis)
-library(DT)
 
 shinyServer(function(input, output) {
   mapInput <- eventReactive(input$go,{
