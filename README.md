@@ -1,4 +1,4 @@
-## New York City Pre-Kindergarten Explorer
+# New York City Pre-Kindergarten Explorer
 
 ## Motivation
 
