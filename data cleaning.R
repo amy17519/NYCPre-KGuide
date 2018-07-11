@@ -1,29 +1,33 @@
-##################################
-##       Amy Tzu-Yu Chen        ##
-##       R Shiny Project        ##
-##################################
 library(ggmap)
 library(dplyr)
 
-##################use address to get long/lat info################
-kinder <- read.csv(url("https://github.com/amy17519/NYCPre-KGuide/blob/master/Universal_Pre-K__UPK__School_Locations.csv"), 
-                   stringsAsFactors=FALSE)
+##################################################################################
+##                  Read Data for all pre-k locations                           ##
+##################################################################################
+## Please go to 
+## https://data.cityofnewyork.us/Education/Universal-Pre-K-UPK-School-Locations/kiyv-ks3f 
+## to download the latest csv for all pre-k locations
+# kinder <- read.csv(PATH_TO_CSV, stringsAsFactors=FALSE)
 
-######paste zipcodes to all addresses to increase accuracy of locating
+
+##################################################################################
+##          Convert address to longitude/latitude coordinates for mapping       ##
+##################################################################################
+# Paste zipcodes to all addresses to increase accuracy of locating
 kinder$address<- paste(kinder$address,kinder$zip)
 geo<-geocode(kinder$address)
 geo<-geo[,c(2,1)]   #change col order of long and lat to match convention 
 
-#Find abnormal locations using longitude/latitude boundaries of NYC
-#Northernmost pt:40.916541, -73.906637
-#Southernmost pt:40.525095, -74.246319
-#Easternmost pt:40.722813, -73.688498
-#Westernmost pt:40.510940, -74.253454
-#####there are 18 suspicious locations that might not be in NYC
+## Find abnormal locations using longitude/latitude boundaries of NYC
+# Northernmost pt:40.916541, -73.906637
+# Southernmost pt:40.525095, -74.246319
+# Easternmost pt:40.722813, -73.688498
+# Westernmost pt:40.510940, -74.253454
+## There are 18 suspicious locations that might not be in NYC
 index<-which(geo$lat>=40.916541 | geo$lat<= 40.525095 |
              geo$lon>=-73.688498 | geo$lon<= -74.253454)
 
-#change locations of those outside of boundaries
+## Change locations of those outside of boundaries
 geo[index[1],]<-c(40.669229,-73.948583)
 geo[index[2],]<-c(40.636565, -74.009728) #full address is 1313 Union St 11225
 geo[index[3],]<-c(40.693324, -73.912429)
@@ -43,7 +47,7 @@ geo[index[16],]<-c(40.613424, -74.075527) #full address is 23 Smith St 10307
 geo[index[17],]<-c(40.509204, -74.246334)
 geo[index[18],]<-c(40.512266, -74.222494)
 
-#some missing rows due to geocode's daily limit on API requests
+## Some missing rows due to geocode's daily limit on API requests
 geo[677,]<-c(40.718359, -74.010878)
 geo[678,]<-c(40.860254, -73.927580)
 geo[679,]<-c(40.826704, -73.947511)
@@ -66,11 +70,13 @@ geo[1368,]<-c(40.510478, -74.230440)
 geo[1451,]<-c(40.509220, -74.246388)
 
 
-kinder<-cbind(kinder,geo)       #add location info to pre-k dataset
-write.csv(geo,file='geo.csv')   #back up location info
+kinder<-cbind(kinder,geo)       # Add location info to pre-k dataset
+write.csv(geo,file='geo.csv')   # Back up location info
 
 
-############change values of dataset to self-explanatory version###########
+##################################################################################
+##                       Rename values for Shiny                                ##
+##################################################################################
 kinder$PreK_Type[kinder$PreK_Type =='CHARTER']<-'Charter'
 
 kinder$Borough[kinder$Borough =='M']<-'Manhattan'
@@ -122,17 +128,22 @@ kinder$Priority[kinder$NOTE ==special_req[9]]<-'Two-thirds seats for District 15
 kinder$Priority[kinder$NOTE ==special_req[10]]<-'Income and other eligibility requirements apply'
 kinder$Priority[kinder$NOTE ==special_req[11]]<-'Free and Reduced Lunch students after siblings'
 
-kinder_view<-kinder[,c(2,3,4,6,7,13,14,19,20,8,10,21,22,23,24,25)]  #save only variables needed for Shiny
-write.csv(kinder_view,file="kid.csv")   #save the cleaned dataset as a csv file
+kinder_view<-kinder[,c(2,3,4,6,7,13,14,19,20,8,10,21,22,23,24,25)]  # Save only variables needed for Shiny
+write.csv(kinder_view,file="kid.csv")   # Save the cleaned dataset as a csv file
 
-################ dataset for GoogleVis charts ############################
-boroughkid<-group_by(kinder_view,Borough)  %>% 
+##################################################################################
+##              Prepare Data for Seat Availability Visualization                ##
+##################################################################################
+boroughkid <- group_by(kinder_view, Borough)  %>% 
   summarise(totalseats=sum(Seats))
 
-#source: http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?src=CF
-#2014 est and 2010 census of children who are 0-5 years old in each borough
+# Data source: http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?src=CF
+# 2014 est and 2010 census of children who are 0-5 years old in each borough
 boroughkid$est2014<-c(106806,189435,81666,140447,27938)/5
 boroughkid$pop2010<-c(103144,177198,76579,132464,28339)/5
-boroughkid[6,]<-c('All Boroughs',sum(boroughkid$totalseats),sum(boroughkid$est2014),sum(boroughkid$pop2010))
+boroughkid[6,]<-c('All Boroughs', 
+                  sum(boroughkid$totalseats),
+                  sum(boroughkid$est2014),
+                  sum(boroughkid$pop2010))
 
-write.csv(boroughkid,file="boroughkid.csv") 
+write.csv(boroughkid, file = "boroughkid.csv") 
